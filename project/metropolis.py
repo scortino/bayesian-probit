@@ -12,10 +12,10 @@ class MetropolisProbit(BaseBayesianProbit):
         super(MetropolisProbit, self).__init__(intercept, epsilon)
 
     def fit(self, X, Y, beta_0=None, return_chain=True, n_iter=2000, warmup=200):
-        beta = np.zeros(X.shape[1] + self.intercept) if beta_0 is None else beta_0
-        betas = [beta]
         if self.intercept:
             X = np.hstack([np.ones((X.shape[0], 1)), X])
+        beta = np.linalg.inv(X.T @ X) @ X.T @ Y if beta_0 is None else beta_0
+        betas = [beta]
         eta = X @ beta
         p_hat = norm.cdf(eta)
         ell = np.prod(((p_hat) ** Y) * ((1 - p_hat) ** (1 - Y)))
