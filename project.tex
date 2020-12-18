@@ -102,7 +102,7 @@ As mentioned above, to use a Gibbs sampler to sample from target \(\pi(\beta|\ve
 \begin{equation*}
     \pi(\beta|\vec{y}, \vec{Z}) = \pi(\beta|\vec{Z}) \propto \pi(\beta) \pi(\vec{Z}|\beta) = \pi(\beta) \prod_{i=1}^n\phi(\vec{x}_i^T \beta),
 \end{equation*}
-which depends on the choice of the prior \(\pi(\beta)\). In particular, if \(\pi(\beta)\) is chosen to be non-informative, standard linear model theory shows that \(\beta|\vec{y}, \vec{Z} \sim N_k(\hat{\beta}_Z, (\vec{X}^T\vec{X})^{-1})\) where \(\hat{\beta}_Z = (\vec{X} \vec{X}^T)^{-1}\vec{X}^T \vec{Z}\). On the other hand, if the conjugate prior \(\beta \sim N_k(\beta^*, \vec{B}^*)\) is chosen, we have that \(\beta | \vec{y}, \vec{Z} \sim N_k(\tilde{\beta}, \tilde{\vec{B}})\) where \(\tilde{\beta} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}(\vec{B}^{*-1}\beta^* + \vec{X}^T\vec{Z})\) and \(\tilde{\vec{B}} = (\vec{B}^{*-1} + \vec{X}\vec{X}^T)^{-1}\). 
+which depends on the choice of the prior \(\pi(\beta)\). In particular, if \(\pi(\beta)\) is chosen to be non-informative, standard linear model theory shows that \(\beta|\vec{y}, \vec{Z} \sim N_k(\hat{\beta}_Z, (\vec{X}^T\vec{X})^{-1})\) where \(\hat{\beta}_Z = (\vec{X} \vec{X}^T)^{-1}\vec{X}^T \vec{Z}\). On the other hand, if the conjugate prior \(\beta \sim N_k(\beta^*, \vec{B}^*)\) is chosen, we have that \(\beta | \vec{y}, \vec{Z} \sim N_k(\tilde{\beta}, \tilde{\vec{B}})\) where \(\tilde{\beta} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}(\vec{B}^{*-1}\beta^* + \vec{X}^T\vec{Z})\) and \(\tilde{\vec{B}} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}\). 
 \par
 Next, for each \(i\), the full conditional of \(Z_i\) is given by:
 \begin{equation*}
@@ -112,7 +112,7 @@ Next, for each \(i\), the full conditional of \(Z_i\) is given by:
         \phi(Z_i; \vec{x}_i^T \beta, 1) \IF{(-\infty, 0]}{Z_i} & \text{if } y_i = 0
     \end{cases}
 \end{equation*}
-that is, \(Z_i\) has a \(N(\vec{x}_i^T \beta, 1)\) truncated by 0 at the left if \(y_i = 0\) and at the right if \(y_i = 1\).
+that is, \(Z_i\) has a \(N(\vec{x}_i^T \beta, 1)\) truncated by 0 at the left if \(y_i = 1\) and at the right if \(y_i = 0\).
 \par 
 Notice that, if we choose the prior \(\pi(\beta)\) in one of the two ways mentioned above, both full conditionals have a known distribution and can be easily sampled from. This means that we can indeed exploit \(\vec{Z}\) to use an auxiliary variable Gibbs sampler to sample from \(\pi(\beta|\vec{y})\). Finally, Algorithm \ref{gibbs} summarizes the steps performed by the auxiliary variable Gibbs sampler presented in this section.
 
