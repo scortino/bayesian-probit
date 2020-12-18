@@ -2,6 +2,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 
 def load_finney47():
@@ -18,6 +19,20 @@ def trace_plot(mc, path=None, replace=False, title_prefix=""):
     ax1.set_ylabel("Value Drawn")
     ax1.plot(range(len(mc)), mc)
     ax1.legend([f"beta {i}" for i in range(len(mc[0]))], loc="lower right")
+    if path is not None:
+        if not os.path.exists(path) or replace:
+            fig.savefig(path)
+    return fig
+
+def dist_plot(mc, warmup=200, path=None, replace=False, title_prefix=""):
+    mc = np.vstack(mc) # T, k
+    k = mc.shape[1]
+    fig, axs = plt.subplots(k, squeeze=True)
+    fig.suptitle(f"{title_prefix}Distribution Plot for Beta after {len(mc)-1} iterations")
+    for i, ax in enumerate(axs):
+        sns.kdeplot(mc[warmup:, i], ax=ax)
+        ax.set_xlabel(f"beta_{i}")
+        ax.set_ylabel("Density")
     if path is not None:
         if not os.path.exists(path) or replace:
             fig.savefig(path)
