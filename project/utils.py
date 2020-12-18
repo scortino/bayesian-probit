@@ -4,7 +4,7 @@ import os
 def trace_plot(mc, path=None, replace=False):
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
-    ax1.set_title(f"Trace Plot for {len(mc)} iterations")
+    ax1.set_title(f"Trace Plot for {len(mc)-1} iterations")
     ax1.set_xlabel("Iteration")
     ax1.set_ylabel("Value Drawn")
     ax1.plot(range(len(mc)), mc)
