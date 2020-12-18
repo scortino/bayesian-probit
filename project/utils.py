@@ -1,5 +1,12 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import os
+
+def load_finney47():
+    dataset = np.loadtxt("./data/finney47.csv", delimiter=",", skiprows=1)
+    X = dataset[:, 1:]
+    Y = dataset[:, 0]
+    return X, Y
 
 def trace_plot(mc, path=None, replace=False):
     fig = plt.figure()
