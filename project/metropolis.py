@@ -5,6 +5,12 @@ from .base import BaseBayesianProbit
 
 
 class MetropolisProbit(BaseBayesianProbit):
+    def __init__(self, prior=None, intercept=True, epsilon=1e-20):
+        if prior is None:
+            prior = lambda x: 1.0 # non-informative prior
+        self.prior = prior
+        super(MetropolisProbit, self).__init__(intercept, epsilon)
+
     def fit(self, X, Y, beta_0=None, return_chain=True, n_iter=2000, warmup=200):
         beta = np.zeros(X.shape[1] + self.intercept) if beta_0 is None else beta_0
         betas = [beta]

@@ -3,10 +3,7 @@ from scipy.stats import norm
 
 
 class BaseBayesianProbit:
-    def __init__(self, prior=None, intercept=True, epsilon=1e-20):
-        if prior is None:
-            prior = lambda x: 1.0 # non-informative prior
-        self.prior = prior
+    def __init__(self, intercept=True, epsilon=1e-20):
         self.beta = None
         self.intercept = intercept
         self.epsilon = epsilon
