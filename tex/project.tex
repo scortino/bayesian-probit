@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[nonatbib, final]{neurips_2020}
+\usepackage[final]{neurips_2020}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -41,16 +41,16 @@
 
 \section{Project Introduction}
 
-This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. 
+This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. Section 2 succinctly describes the probit regression model and the Bayesian approach to estimating its coefficients using instances of the Metropolis-Hastings algorithm. Next, section 3 and 4 briefly explain two such instances, namely the Metropolis algorithm and the auxiliary variable Gibbs sampler. Then, section 5 compares the performance of the two algorithms on a dataset provided by Finney \cite{finney1947estimation} to study the relationship between the occurrence of transient skin vasorestriction and the rate and volume of the air inspired by the individuals undergoing the test. Performance is assessed by means of basic diagnostics, such as trace plots and acceptance rate computation. Lastly, section 6 summarizes the results of the project.
 
 \section{Probit Model}
-Let \(Y_1,...,Y_n\) be a sample of \(n\) independent binary random variables, where \(Y_i \sim B(p_i)\). The probit model assumes that \(p_i = \Phi(\vec{x}_i^T \beta), i = 1,....,n\), where \(\vec{x}_i^T = \begin{pmatrix} x_{i1} & \hdots & x_{1k} \end{pmatrix}\) is a \(k\)-dimensional vector of observed covariates, \(\beta\) is a \(k \times 1\) vector of unknown coefficients, and \(\Phi\) denotes the cumulative distribution function of a standard normal random variable. Given a sample of observations \(\{(y_i, \vec{x}_i)\}_{i=1}^n\), the standard estimation procedure for the probit model employs the maximum likelihood estimation of coefficient \(\beta\). However, the Bayesian approach to the estimation of \(\beta\) constitute an interesting alternative. In particular, suppose the posterior density of \(\beta\), denoted by \(\pi(\beta|\vec{y})\),  was known and tractable. Then, the value of the posterior first moment, \(\EX[\beta|\vec{y}]\), would constitute a reasonable estimate for \(\beta\). However, if we denote the proper or improper prior density of \(\beta\) by \(\pi(\beta)\), the posterior density of \(\beta\) has the form:
+Let \(Y_1,...,Y_n\) be a sample of \(n\) independent binary random variables, where \(Y_i \sim B(p_i)\). The probit model assumes that \(p_i = \Phi(\vec{x}_i^T \beta), i = 1,....,n\), where \(\vec{x}_i^T = \begin{pmatrix} x_{i1} & \hdots & x_{1k} \end{pmatrix}\) is a \(k\)-dimensional vector of observed covariates, \(\beta\) is a \(k \times 1\) vector of unknown coefficients, and \(\Phi\) denotes the cumulative distribution function of a standard normal random variable. Given a sample of observations \(\{(y_i, \vec{x}_i)\}_{i=1}^n\), the standard estimation procedure for the probit model employs the maximum likelihood estimation of coefficient \(\beta\). However, the Bayesian approach to the estimation of \(\beta\) constitutes an interesting alternative. In particular, suppose the posterior density of \(\beta\), denoted by \(\pi(\beta|\vec{y})\),  was known and tractable. Then, the value of the posterior first moment, \(\EX[\beta|\vec{y}]\), would constitute a reasonable estimate for \(\beta\). However, if we denote the proper or improper prior density of \(\beta\) by \(\pi(\beta)\), the posterior density of \(\beta\) has the form:
 \begin{equation*}
     \pi(\beta|\vec{y}) \propto \pi(\beta) \prod_{i=1}^n \Phi(\vec{x}_i^T \beta)^{y_i} (1 - \Phi(\vec{x}_i^T \beta))^{1 - y_i},
 \end{equation*}
 which is intractable.
 \par 
-To address the issue of sampling from intractable posteriors, the Metropolis-Hastings algorithm is often employed in Bayesian statistics. By means of a proposal density to used to sample candidates and a probabilistic criterion to accept or reject them, this method is able to generate a Markov chain \(\{\beta\}_{t \geq 1}\) having the target posterior as stationary distribution. This means that, if such a Markov chain of length \(T\) is generated and \(t_0 < T\) denotes the step at which the chain can be considered to have converged to the stationary distribution \(\pi{\beta|\vec{y}}\), the estimator
+To address the issue of sampling from intractable posteriors, the Metropolis-Hastings algorithm is often employed in Bayesian statistics. By means of a proposal density used to sample candidates and a probabilistic criterion to accept or reject them, this method is able to generate a Markov chain \(\{\beta_t\}_{t \geq 1}\) having the target posterior as stationary distribution. This means that, if such a Markov chain of length \(T\) is generated and \(t_0 < T\) denotes the step at which the chain can be considered to have converged to the stationary distribution \(\pi({\beta|\vec{y}})\), the estimator
 \begin{equation*}
     \hat{\beta} = \frac{1}{T-t_0} \sum_{t=t_0}^T \beta_t
 \end{equation*}
@@ -61,11 +61,11 @@ Instances of the MH algorithm differ in terms of the proposal density used. In p
 \section{Metropolis Algorithm}
 The Metropolis algorithm is an instance of the MH algorithm with proposal density \(q(\beta^*|\beta_t)\) symmetric around the current value of the chain, namely \(\beta_t\). When \(q(y|x)\) has such a property, the candidate acceptance probability becomes:
 \begin{equation*}
-    \alpha(\beta^*, \beta_t) = \min\Bigg\{1, \frac{\pi(\beta^*|\vec{y})}{\pi(\beta_t|\vec{y})}\Bigg\} = \min\Bigg\{1, \frac{\pi(\beta^*)}{\pi(\beta_t)}\frac{\mathcal{L}(\beta^*)}{\mathcal{L}(\beta_t)}\Bigg\}
+    \alpha(\beta_t, \beta^*) = \min\Bigg\{1, \frac{\pi(\beta^*|\vec{y})}{\pi(\beta_t|\vec{y})}\Bigg\} = \min\Bigg\{1, \frac{\pi(\beta^*)}{\pi(\beta_t)}\frac{\mathcal{L}(\beta^*)}{\mathcal{L}(\beta_t)}\Bigg\}
 \end{equation*}
 where \(\mathcal{L}(\beta)\) denotes the likelihood of the model at \(\beta\).
 \par
-The proposal used in this report is a multivariate normal distribution. In particular, at each sampling step performed by the algorithm, a candidate is drawn from \(q(\beta^*|\beta^t) = N_k(\beta_t,V)\) where \(V = \mathcal{I}^{-1}(\beta_t)\) is the inverse of the Fisher information matrix computed at the current value of \(\beta_t\). Moreover, recall that, in the case of a generalized linear model with link function \(g\), it can be shown that \(\mathcal{I}(\beta_t) = X^T W X\) where \(X = \begin{bmatrix} \vec{x}_1 \hdots \vec{x}_n \end{bmatrix}\) and \(W\) is a diagonal matrix such that 
+The proposal used in this report is a multivariate normal distribution. In particular, at each sampling step performed by the algorithm, a candidate is drawn from \(q(\beta^*|\beta_t) = N_k(\beta_t,V)\) where \(V = \mathcal{I}^{-1}(\beta_t)\) is the inverse of the Fisher information matrix computed at the current value of \(\beta_t\). Moreover, recall that, in the case of a generalized linear model with link function \(g\), it can be shown that \(\mathcal{I}(\beta_t) = X^T W X\) where \(X = \begin{bmatrix} \vec{x}_1 \hdots \vec{x}_n \end{bmatrix}\) and \(W\) is a diagonal matrix such that 
 \begin{equation*}
     w_{ii} = \frac{1}{\V(Y_i)}\bigg(\frac{\partial \vec{x}_i^T \beta}{\partial g(\vec{x}_i^T \beta)}\bigg)^{-2}.
 \end{equation*}
@@ -74,7 +74,7 @@ This means that, in the case of the probit model, \(w_{ii} = \phi^2(\vec{x}_i^T 
 Algorithm \ref{metropolis} summarizes the steps performed by the Metropolis algorithm presented in this section.
 
 \begin{algorithm}
-\caption{Metropolis algorithm for Probit Estimation}\label{metropolis}
+\caption{Metropolis Algorithm for Probit Estimation}\label{metropolis}
 \begin{algorithmic}[1]
 \Procedure{Metropolis}{$\beta_0$}
     \State $\beta \gets \beta_0$
@@ -92,11 +92,12 @@ Algorithm \ref{metropolis} summarizes the steps performed by the Metropolis algo
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+% compute \hat\Beta? Proof? Bayesian estimator è scritto all'inizio. Proof per cosa? Stationary distribution?
 
 \section{Auxiliary Variable Gibbs Sampler}
-Sometimes, when a Gibbs sampler cannot be easily devised for a target distribution, it is possible to exploit a vector of auxiliary random variables to successfully complete the task. This straightforward extension of the simple Gibbs sampler is called auxiliary variable Gibbs sampler. In particular, if the target distribution is \(\pi(\beta|\vec{y})\) and we are able to find a random vector \(\vec{Z}\) such that the full conditionals \(\pi(\beta|\vec{y}, \vec{Z}\) and \(\pi(\vec{Z}|\vec{y}, \beta)\) are known and can be sampled from, then a Gibbs sampler can be used to generate the Markov chain \(\{(\beta_t, \vec{Z}_t)\}_{t\geq 1}\). Crucially, it is possible to show that the sequence \(\{\beta_t\}_{t\geq 1}\) is also a Markov chain and has the target distribution \(\pi(\beta|\vec{y})\) as its stationary distribution. 
+Sometimes, when a Gibbs sampler cannot be easily devised for a target distribution, it is possible to exploit a vector of auxiliary random variables to successfully complete the task. This straightforward extension of the simple Gibbs sampler is called auxiliary variable Gibbs sampler. In particular, if the target distribution is \(\pi(\beta|\vec{y})\) and we are able to find a random vector \(\vec{Z}\) such that the full conditionals \(\pi(\beta|\vec{y}, \vec{Z})\) and \(\pi(\vec{Z}|\vec{y}, \beta)\) are known and can be sampled from, then a Gibbs sampler can be used to generate the Markov chain \(\{(\beta_t, \vec{Z}_t)\}_{t\geq 1}\). Crucially, it is possible to show that the sequence \(\{\beta_t\}_{t\geq 1}\) is also a Markov chain and has the target distribution \(\pi(\beta|\vec{y})\) as its stationary distribution. 
 \par
-In regards to the scenario considered in this report, it turns out that any probit model can be expressed in terms of a normal linear model. In particular, introduce auxiliary vector \(\vec{Z} = \begin{pmatrix} Z_1 \hdots Z_n \end{pmatrix}\) such that the \(Z_i\) are independent \(N(\vec{x}_i^T \beta, 1)\) and define \(Y_i = \IF{(0, \infty)}{Z_i}\), i.e. \(Y_i = 1\) if \(Z_i > 0\) and \(Y_i = 0\) otherwise. Then, it is possible to show that the \(Y_i\) are independent Bernoulli random variables with \(p_i = \Phi(\vec{x}_i^T)\), as prescribed by the probit model. 
+In regards to the scenario considered in this report, it turns out that any probit model can be expressed in terms of a normal linear model. In particular, introduce auxiliary vector \(\vec{Z} = \begin{pmatrix} Z_1 \hdots Z_n \end{pmatrix}\) such that the \(Z_i\) are independent \(N(\vec{x}_i^T \beta, 1)\) and define \(Y_i = \IF{(0, \infty)}{Z_i}\), i.e. \(Y_i = 1\) if \(Z_i > 0\) and \(Y_i = 0\) otherwise. Then, it is possible to show that the \(Y_i\) are independent Bernoulli random variables with \(p_i = \Phi(\vec{x}_i^T\beta)\), as prescribed by the probit model. 
 \par 
 As mentioned above, to use a Gibbs sampler to sample from target \(\pi(\beta|\vec{y})\) using \(\vec{Z}\) as the auxiliary variable, the full conditionals \(\pi(\beta|\vec{y}, \vec{Z})\) and \(\pi(\vec{Z}|\vec{y}, \beta)\) have to be known distributions. First, the full conditional of \(\beta\) is given by:
 \begin{equation*}
@@ -134,5 +135,8 @@ Notice that, if we choose the prior \(\pi(\beta)\) in one of the two ways mentio
 
 \section{Diagnostics and Performance Comparison}
 \section{Final Remarks}
+
+\bibliographystyle{plain}
+\bibliography{project}
 
 \end{document}
