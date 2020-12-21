@@ -19,20 +19,20 @@ class MetropolisProbit(BaseBayesianProbit):
         betas = [beta]
         eta = X @ beta
         p_hat = norm.cdf(eta)
-        ell = np.prod(((p_hat) ** Y) * ((1 - p_hat) ** (1 - Y)))
+        L = np.prod(((p_hat) ** Y) * ((1 - p_hat) ** (1 - Y)))
         for _ in range(n_iter):
             I = X.T @ np.diag((norm.pdf(eta) ** 2) / (p_hat * (1 - p_hat) + self.epsilon)) @ X
             cov = np.linalg.inv(I)
             beta_star = multivariate_normal.rvs(beta, cov)
             eta_star = X @ beta_star
             p_hat_star = norm.cdf(eta_star)
-            ell_star = np.prod(((p_hat_star) ** Y) * ((1 - p_hat_star) ** (1 - Y)))
-            alpha = (self.prior(beta_star) * ell_star) / (self.prior(beta) * ell) # non-informative prior
+            L_star = np.prod(((p_hat_star) ** Y) * ((1 - p_hat_star) ** (1 - Y)))
+            alpha = (self.prior(beta_star) * L_star) / (self.prior(beta) * L)
             if np.random.rand() < alpha:
                 beta = beta_star
                 eta = eta_star
                 p_hat = p_hat_star
-                ell = ell_star
+                L = L_star
             betas.append(beta)
         self.beta = sum(betas[warmup:]) / (n_iter - warmup) # bayesian estimator
         if return_chain:
