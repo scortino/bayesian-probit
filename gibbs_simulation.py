@@ -4,7 +4,7 @@ from project.gibbs import GibbsProbit
 from project.utils import load_finney47, trace_plot, dist_plot
 
 
-METHOD = 'multinorm'
+METHOD = 'gibbs'
 BASE_PATH = Path('./images')
 SEED = 42
 
@@ -19,7 +19,7 @@ def simul(n_iter, warmup):
     trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=False, title_prefix=f"{METHOD.capitalize()} - ")
     dist_plot(mc, warmup=warmup, path=BASE_PATH/f"dist_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=False, title_prefix=f"{METHOD.capitalize()} - ")
 
-    PRIOR = "multi-norm"
+    PRIOR = "multinorm"
     m = GibbsProbit(prior="multi-norm", intercept=True)
     mc = m.fit(X, Y, n_iter=n_iter, warmup=warmup, seed=SEED)
     trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=False, title_prefix=f"{METHOD.capitalize()} - ")
