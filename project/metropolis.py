@@ -11,7 +11,7 @@ class MetropolisProbit(BaseBayesianProbit):
         self.prior = prior
         super(MetropolisProbit, self).__init__(intercept, epsilon)
 
-    def fit(self, X, Y, beta_0=None, return_chain=True, n_iter=2000, warmup=200, seed=None):
+    def fit(self, X, Y, beta_0=None, n_iter=2000, warmup=200, return_chain=True, seed=None):
         np.random.seed(seed)
         if self.intercept:
             X = np.hstack([np.ones((X.shape[0], 1)), X])
