@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import multivariate_normal, truncnorm
+from tqdm import tqdm
 
 from .base import BaseBayesianProbit
 
@@ -27,7 +28,7 @@ class GibbsProbit(BaseBayesianProbit):
             b_star_inv = np.linalg.inv(np.eye(len(beta)))
             beta_tilde_base = np.linalg.inv(b_star_inv + X.T @ X)
             b_tilde = np.linalg.inv(b_star_inv + X.T @ X)
-        for _ in range(n_iter):
+        for _ in tqdm(range(n_iter)):
             eta = X @ beta
             Z[m] = truncnorm.rvs(-eta[m], np.inf, loc=eta[m], scale=1)
             Z[~m] = truncnorm.rvs(-np.inf, -eta[~m], loc=eta[~m], scale=1)

@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import multivariate_normal, norm
+from tqdm import tqdm
 
 from .base import BaseBayesianProbit
 
@@ -20,7 +21,7 @@ class MetropolisProbit(BaseBayesianProbit):
         eta = X @ beta
         p_hat = norm.cdf(eta)
         L = np.prod(((p_hat) ** Y) * ((1 - p_hat) ** (1 - Y)))
-        for _ in range(n_iter):
+        for _ in tqdm(range(n_iter)):
             I = X.T @ np.diag((norm.pdf(eta) ** 2) / (p_hat * (1 - p_hat) + self.epsilon)) @ X
             cov = np.linalg.inv(I)
             beta_star = multivariate_normal.rvs(beta, cov)
