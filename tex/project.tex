@@ -41,7 +41,7 @@
 
 \section{Project Introduction}
 
-This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. Section 2 succinctly describes the probit regression model and the Bayesian approach to estimating its coefficients using instances of the Metropolis-Hastings algorithm. Next, section 3 and 4 briefly explain two such instances, namely the Metropolis algorithm and the auxiliary variable Gibbs sampler. Then, section 5 compares the performance of the two algorithms on a dataset provided by Finney \cite{finney1947estimation} to study the relationship between the occurrence of transient skin vasorestriction and the rate and volume of the air inspired by the individuals undergoing the test. Performance is assessed by means of basic diagnostics, such as trace plots and acceptance rate computation. Lastly, section 6 summarizes the results of the project.
+This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. Section 2 succinctly describes the probit regression model and the Bayesian approach to estimating its coefficients using instances of the Metropolis-Hastings algorithm. Next, section 3 and 4 briefly explain two such instances, namely the Metropolis algorithm and the auxiliary variable Gibbs sampler. Then, section 5 compares the performance of the two algorithms on a dataset provided by Finney \cite{finney1947estimation} to study the relationship between the occurrence of transient skin vasorestriction and the rate and volume of the air inspired by the individuals undergoing the test. Performance is assessed by means of basic diagnostics, such as trace plots and acceptance rate computation. Lastly, section 6 summarizes the results of the project. As prescribed by the project's description, this report is heavily inspired by Albert and Chib \cite{albert1993bayesian}.
 
 \section{Probit Model}
 Let \(Y_1,...,Y_n\) be a sample of \(n\) independent binary random variables, where \(Y_i \sim B(p_i)\). The probit model assumes that \(p_i = \Phi(\vec{x}_i^T \beta), i = 1,....,n\), where \(\vec{x}_i^T = \begin{pmatrix} x_{i1} & \hdots & x_{1k} \end{pmatrix}\) is a \(k\)-dimensional vector of observed covariates, \(\beta\) is a \(k \times 1\) vector of unknown coefficients, and \(\Phi\) denotes the cumulative distribution function of a standard normal random variable. Given a sample of observations \(\{(y_i, \vec{x}_i)\}_{i=1}^n\), the standard estimation procedure for the probit model employs the maximum likelihood estimation of coefficient \(\beta\). However, the Bayesian approach to the estimation of \(\beta\) constitutes an interesting alternative. In particular, suppose the posterior density of \(\beta\), denoted by \(\pi(\beta|\vec{y})\),  was known and tractable. Then, the value of the posterior first moment, \(\EX[\beta|\vec{y}]\), would constitute a reasonable estimate for \(\beta\). However, if we denote the proper or improper prior density of \(\beta\) by \(\pi(\beta)\), the posterior density of \(\beta\) has the form:
@@ -92,7 +92,7 @@ Algorithm \ref{metropolis} summarizes the steps performed by the Metropolis algo
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-% compute \hat\Beta? Proof? Bayesian estimator è scritto all'inizio. Proof per cosa? Stationary distribution?
+
 
 \section{Auxiliary Variable Gibbs Sampler}
 Sometimes, when a Gibbs sampler cannot be easily devised for a target distribution, it is possible to exploit a vector of auxiliary random variables to successfully complete the task. This straightforward extension of the simple Gibbs sampler is called auxiliary variable Gibbs sampler. In particular, if the target distribution is \(\pi(\beta|\vec{y})\) and we are able to find a random vector \(\vec{Z}\) such that the full conditionals \(\pi(\beta|\vec{y}, \vec{Z})\) and \(\pi(\vec{Z}|\vec{y}, \beta)\) are known and can be sampled from, then a Gibbs sampler can be used to generate the Markov chain \(\{(\beta_t, \vec{Z}_t)\}_{t\geq 1}\). Crucially, it is possible to show that the sequence \(\{\beta_t\}_{t\geq 1}\) is also a Markov chain and has the target distribution \(\pi(\beta|\vec{y})\) as its stationary distribution. 
@@ -101,9 +101,21 @@ In regards to the scenario considered in this report, it turns out that any prob
 \par 
 As mentioned above, to use a Gibbs sampler to sample from target \(\pi(\beta|\vec{y})\) using \(\vec{Z}\) as the auxiliary variable, the full conditionals \(\pi(\beta|\vec{y}, \vec{Z})\) and \(\pi(\vec{Z}|\vec{y}, \beta)\) have to be known distributions. First, the full conditional of \(\beta\) is given by:
 \begin{equation*}
-    \pi(\beta|\vec{y}, \vec{Z}) = \pi(\beta|\vec{Z}) \propto \pi(\beta) \pi(\vec{Z}|\beta) = \pi(\beta) \prod_{i=1}^n\phi(\vec{x}_i^T \beta),
+    \pi(\beta|\vec{y}, \vec{Z}) = \pi(\beta|\vec{Z}) \propto \pi(\beta) \pi(\vec{Z}|\beta) = \pi(\beta) \prod_{i=1}^n\phi(Z_i;\vec{x}_i^T \beta, 1),
 \end{equation*}
-which depends on the choice of the prior \(\pi(\beta)\). In particular, if \(\pi(\beta)\) is chosen to be non-informative, standard linear model theory shows that \(\beta|\vec{y}, \vec{Z} \sim N_k(\hat{\beta}_Z, (\vec{X}^T\vec{X})^{-1})\) where \(\hat{\beta}_Z = (\vec{X} \vec{X}^T)^{-1}\vec{X}^T \vec{Z}\). On the other hand, if the conjugate prior \(\beta \sim N_k(\beta^*, \vec{B}^*)\) is chosen, we have that \(\beta | \vec{y}, \vec{Z} \sim N_k(\tilde{\beta}, \tilde{\vec{B}})\) where \(\tilde{\beta} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}(\vec{B}^{*-1}\beta^* + \vec{X}^T\vec{Z})\) and \(\tilde{\vec{B}} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}\). 
+which depends on the choice of the prior \(\pi(\beta)\). In particular, if \(\pi(\beta)\) is chosen to be non-informative, we have that
+\begin{align*}
+    \pi(\beta|\vec{y}, \vec{Z}) &\propto \prod_{i=1}^n\phi(Z_i;\vec{x}_i^T \beta, 1) \propto \exp\Bigg\{\sum_{i=1}^n (Z_i - \vec{x}_i^T \beta)^2\Bigg\} \\
+                                &\propto \exp\Big\{(\vec{X} \beta)^T (\vec{X} \beta) - 2 (\vec{X}\beta)^T \vec{Z}\Big\} \\
+                                &= \exp\Big\{(\vec{X} \beta)^T (\vec{X} \beta) - 2 (\vec{X}\beta)^T 
+                                \vec{X} (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\Big\}.
+\end{align*}
+By completing the square with the product of the transpose of \(\vec{X} (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\) with itself,
+\begin{align*}
+    \pi(\beta|\vec{y}, \vec{Z}) &\propto \exp\Big\{\big(\vec{X}\beta - \vec{X} (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\big)^T\big(\vec{X}\beta - \vec{X} (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\big)\Big\} \\
+    &= \exp\Big\{\big(\beta - (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\big)^T (X^T X) \big(\beta - (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\big)\Big\}
+\end{align*}
+which is the kernel of a multivariate normal random variable with with mean \(\hat{\beta}_Z = (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{Z}\) and variance \((\vec{X}^T \vec{X})^{-1}\). That is, if \(\pi(\beta)\) is chosen to be non-informative, \(\beta|\vec{y}, \vec{Z} \sim N_k(\hat{\beta}_Z, (\vec{X}^T\vec{X})^{-1})\). On the other hand, if the conjugate prior \(\beta \sim N_k(\beta^*, \vec{B}^*)\) is chosen, we it can be shown that \(\beta | \vec{y}, \vec{Z} \sim N_k(\tilde{\beta}, \tilde{\vec{B}})\) where \(\tilde{\beta} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}(\vec{B}^{*-1}\beta^* + \vec{X}^T\vec{Z})\) and \(\tilde{\vec{B}} = (\vec{B}^{*-1} + \vec{X}^T\vec{X})^{-1}\). 
 \par
 Next, for each \(i\), the full conditional of \(Z_i\) is given by:
 \begin{equation*}
@@ -134,6 +146,48 @@ Notice that, if we choose the prior \(\pi(\beta)\) in one of the two ways mentio
 \end{algorithm}
 
 \section{Diagnostics and Performance Comparison}
+% summary of procedures (test MH and Gibbs on same dataset(Finney47) and use of 2 priors for Gibbs(noninfo and multinorm) and 3 for MH(noninfo, lowvar multinorm, highvar multinorm)).
+% % distplot comparison with paper,
+
+Following the pseudo-code described in Algorithm \ref{metropolis} and \ref{gibbs} we implemented the Metropolis and auxiliary variable Gibbs sampler algorithms using the Python programming language. In both cases, the user is allowed to specify whether to include an intercept in the estimation, as well as the initial value for \(\beta_0\), with the default being the OLS estimate for \(\beta\). Moreover, for the Metropolis algorithm, the user is allowed to specify a custom prior distribution, while the Gibbs sampler implemented the full condition for the non-informative and conjugate multivariate normal prior. 
+% We tested them on the same dataset Finney47 \cite{finney1947estimation}. 
+
+In particular, we fitted a BayesianProbit model through the Metropolis-Hasting algorithm  on the Finney47 dataset \cite{finney1947estimation} in 3 different scenarios:
+\begin{enumerate}
+    \item Non-informative prior 
+    \item Multivariate normal prior with high variance centered around the true values of the betas
+    \item Multivariate normal prior with low variance centered around the true values of the betas
+\end{enumerate}
+
+On the same dataset, we also tested the Auxiliary Variable Gibbs Sampler in 2 different scenarios:
+\begin{enumerate}
+    \item Non-informative prior
+    \item Multivariate normal prior with high variance (diagonal covariance matrix with diagonal entries equal to 10) centered around 0
+    \item Multivariate normal prior with low variance (diagonal covariance matrix with diagonal entries equal to 1) centered around 0
+\end{enumerate}
+
+Both the algorithms were run assuming the existence of an intercept in the model, with \(\beta_0 = \hat\beta_{OLS} = (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{y}\), for a number of iterations equal to XXXX. Moreover, we decided to create a variable named "warmup" that would store the number of initial observations to be discarded to compute the previously described \(\hat\beta\).
+
+As a result of these simulations, we plotted the distribution and the trace of the parameters obtained in each scenario. We also plotted the behaviour of the acceptance rate for the Metropolis algorithm.  
+
+% distplots are different in shape but similar scale, is it good?
+
+% Describe traceplots (Gibbs wiggle wiggle),
+% acceptance rate (0.4, not too high(local), not too low(stuck) -> slow convergence to stationary distribution, tao choice)
+First, we compared the trace plots obtained in the first scenario of the two algorithms. We could immediately notice that the Gibbs Sampler trace plot seemed to be more accurate as a representation of a sample drawn from the posterior of our parameter of interest. The main reason is that, since the Gibbs Sampler always accepts the proposal, it seems to better explore the sample space of \(\beta\). The Metropolis algorithm, instead, accepts the proposal based on an acceptance ratio and this means that sometimes the proposal is rejected and the new state of the Markov Chain is the same as in the previous iteration. From the trace plot we can see that this stochastic process explores the sample space of \(\beta\) based on "local movements" which make the next observation more likely to be correlated with the previous one. 
+
+(Therefore, if the aim was to obtain a sample of independent observations we would recommend to perform a systematic random sampling on the output sample.) %makes sense ?)  
+
+Moreover, we also noticed that within the simulations performed using Metropolis, as expected, the prior with high variance outperformed the one with low variance. Regarding the Gibbs Sampler, the scenario with multivariate normal prior produced a better trace plot then the one with non informative prior.     
+% Firstly, we compared the trace plots. We denote that the Metropolis chain, compared to the Gibbs Sampler one, gets more frequently stuck in certain neighbourhood of the distribution.
+% The Gibbs Sampler has a more wiggly shape that guarantees a less local exploration of the distribution of the parameters. 
+
+%add something about the speed to the convergence? Using warmup we skipped this topic
+
+Looking at the acceptance ratio of the Metropolis it is possible to denote a stabilization of the rate around 0.4 after XXXX iterations. This value can be considered quite satisfactory. On one hand it is not too high, which would lead to the risk of a local exploration. On the other hand it is not too low, that would lead to the risk of a slow convergence to the stationary distribution.
+
+%tao choice?
+
 \section{Final Remarks}
 
 \bibliographystyle{plain}
