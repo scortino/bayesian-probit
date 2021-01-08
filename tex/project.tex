@@ -175,51 +175,53 @@ First, Figure \ref{fig:trace_1} compares the trace plots obtained using the two 
     \centering
     \includegraphics[scale=0.6]{images/trace_gibbs_noinfo_800_warmup_0.png}
     \includegraphics[scale=0.6]{images/trace_metropolis_noinfo_800_warmup_0.png}
-    \caption{Trace plots for both algorithms with non informative prior}
+    \caption{Trace plots for both algorithms with non informative prior.}
     \label{fig:trace_1}
 \end{figure}
 
 
 % (Therefore, if the aim was to obtain a sample of independent observations we would recommend to perform a systematic random sampling on the output sample.) %makes sense ?)  
 
-Moreover, we also noticed that within the simulations performed using Metropolis the prior with high variance outperformed the one with low variance. Given that the true value of the coefficients is not very close to zero, this is expected. For priors centered at zero, lower variance means narrower exploration of the sample space of \(\beta\). Regarding the Gibbs Sampler, the scenario with multivariate normal prior produced a better trace plot then the one with non-informative prior. 
+Moreover, from the simulations performed using Metropolis, we also noticed that, as shown in Figure \ref{fig:trace_2}, the prior with high variance outperformed the one with low variance. Given that the true value of the coefficients is not very close to zero, this is expected. For priors centered at zero, lower variance means narrower exploration of the sample space of \(\beta\). Regarding the Gibbs Sampler, as shown in figure \ref{fig:trace_3}, the simulation with multivariate normal prior produced a better trace plot then the one with non-informative prior. 
+
 \begin{figure}[htp]
     \centering
     \includegraphics[scale=0.6]{images/trace_metropolis_highvar_800_warmup_0.png}
     \includegraphics[scale=0.6]{images/trace_metropolis_lowvar_800_warmup_0.png}
-    \caption{Starting from the top: trace plot for betas sampled using high variance prior on Metropolis, trace plot for betas sampled using low variance prior on Metropolis}
+    \caption{Starting from the top: trace plot for the coefficients sampled using high variance multivariate normal prior with Metropolis, trace plot for the coefficients sampled using low variance multivariate normal prior with Metropolis.}
     \label{fig:trace_2}
 \end{figure}
+
 \begin{figure}[htp]
     \centering
-    \includegraphics[scale=0.6]{images/trrtrace_metropolis_highvar_800_warmup_0.png}
-    \includegraphics[scale=0.6]{images/trace_metropolis_lowvar_800_warmup_0.png}
-    \caption{Starting from the top: trace plot for betas sampled using high variance prior on Metropolis, trace plot for betas sampled using low variance prior on Metropolis}
-    \label{fig:trace_2}
+    \includegraphics[scale=0.6]{images/trace_gibbs_multinorm_800_warmup_0_high.png}
+    \includegraphics[scale=0.6]{images/trace_gibbs_multinorm_800_warmup_0_low.png}
+    \caption{Starting from the top: trace plot for the coefficients sampled using high variance multivariate normal prior on Gibbs, trace plot for the coefficients sampled using low variance multivariate normal prior on Gibbs.}
+    \label{fig:trace_3}
 \end{figure}
 % Firstly, we compared the trace plots. We denote that the Metropolis chain, compared to the Gibbs Sampler one, gets more frequently stuck in certain neighbourhood of the distribution.
 % The Gibbs Sampler has a more wiggly shape that guarantees a less local exploration of the distribution of the parameters. 
 
 %add something about the speed to the convergence? Using warmup we skipped this topic
 
-Looking at the acceptance rate of the Metropolis displayed in Figure \ref{fig:ar} it is possible to denote a stabilization of the rate around 0.4 after nearly 500 iterations. This value can be considered quite satisfactory. On one hand it is not too high, which would lead to the risk of a local exploration. On the other hand it is not too low, that would lead to the risk of a slow convergence to the stationary distribution.
+Looking at the acceptance rate of the Metropolis with non-informative prior displayed in Figure \ref{fig:ar}, it is possible to notice a stabilization of the rate around 0.4 after nearly 500 iterations. This value can be considered quite satisfactory. On the one hand, it is not too high, which would lead to the risk of a local exploration. On the other hand, it is not too low, that would lead to the risk of slow convergence to the stationary distribution.
 
 \begin{figure}[htp]
     \centering
     \includegraphics[scale=0.6]{images/ar_metropolis_noinfo_800_warmup_0.png}
     \includegraphics[scale=0.6]{images/ar_metropolis_noinfo_20000_warmup_0.png}
-    \caption{Starting from the top: acceptance rate of the Metropolis algorithm for 800 iteration, acceptance rate of the Metropolis algorithm for 20000 iterations}
+    \caption{Starting from the top: acceptance rate of the Metropolis algorithm with non informative prior for 800 iterations, acceptance rate of the Metropolis algorithm with non informative prior for 20000 iterations.}
     \label{fig:ar}
 \end{figure}
-Finally the distribution plot of the the parameters obtained are nearly the same as the ones proposed by Albert and Chib \cite{albert1993bayesian}. 
+Finally the distribution plots of the the parameters obtained, as shown in Figure \ref{fig:dist}, are nearly the same as the ones discussed by Albert and Chib \cite{albert1993bayesian} in their paper. 
 
-\begin{figure}[htp]
+\begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.41]{images/albert_chibb.png}
-    \includegraphics[scale=0.41]{images/dist_gibbs_noinfo_20000_warmup_0.png}
-    \includegraphics[scale=0.41]{images/dist_metropolis_noinfo_20000_warmup_0.png}
-    \caption{Starting from the top: the distribution plots from Albert and Chib, distribution of our parameters for Gibbs and Metropolis respectively}
-    \label{fig:ar}
+    \includegraphics[scale=0.5]{images/albert_chibb.png}
+    \includegraphics[scale=0.6]{images/dist_gibbs_noinfo_20000_warmup_0.png}
+    % \includegraphics[scale=0.41]{images/dist_metropolis_noinfo_20000_warmup_0.png}
+    \caption{Starting from the top: the distribution plots from Albert and Chib, the distribution plots of the parameters with Gibbs and Metropolis, respectively.}
+    \label{fig:dist}
 \end{figure}
 
 \bibliographystyle{plain}
