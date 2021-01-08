@@ -11,8 +11,9 @@ class GibbsProbit(BaseBayesianProbit):
             raise ValueError("Only improper non-informative and standard multivariate normal priors are supported")
         self.prior = prior
         super(GibbsProbit, self).__init__(intercept, epsilon)
+     
 
-    def fit(self, X, Y, beta_0=None, return_chain=True, n_iter=2000, warmup=200, seed=None):
+    def fit(self, X, Y, beta_0=None, return_chain=True, n_iter=2000, warmup=200, seed=None, beta_star=None, b_star=None):
         np.random.seed(seed)
         if self.intercept:
             X = np.hstack([np.ones((X.shape[0], 1)), X])
@@ -23,9 +24,9 @@ class GibbsProbit(BaseBayesianProbit):
         if self.prior == "non-informative":
             XprimeX_inv = np.linalg.inv(X.T @ X)
         elif self.prior == "multi-norm":
-            # TODO: allow user to specify beta_star and b_star (in __init__?)
-            beta_star = np.zeros_like(beta)
-            b_star_inv = np.linalg.inv(np.eye(len(beta)))
+            beta_star = beta_star if beta_star is not None else np.zeros_like(beta)
+            b_star = b_star if b_star is not None else np.eye(len(beta))
+            b_star_inv = np.linalg.inv(b_star)
             beta_tilde_base = np.linalg.inv(b_star_inv + X.T @ X)
             b_tilde = np.linalg.inv(b_star_inv + X.T @ X)
         for _ in tqdm(range(n_iter)):

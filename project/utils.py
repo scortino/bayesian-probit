@@ -37,3 +37,17 @@ def dist_plot(mc, warmup=200, path=None, replace=False, title_prefix=""):
         if not os.path.exists(path) or replace:
             fig.savefig(path)
     return fig
+
+def ar_plot(accepted, warmup=200, path=None, replace=False, title_prefix=""):   
+    n_sample = len(accepted)
+    accepted_cum = np.cumsum(accepted)
+    iterations = np.arange(1, n_sample+1)
+    acceptance_rate = accepted_cum / iterations
+    fig, ax = plt.subplots(1,1)
+    ax.plot(iterations, acceptance_rate)
+    ax.set_xlabel("iterations")
+    ax.set_ylabel("acceptance_rate")
+    if path is not None:
+        if not os.path.exists(path) or replace:
+            fig.savefig(path) 
+    return fig
