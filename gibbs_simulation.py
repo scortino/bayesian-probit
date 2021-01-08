@@ -24,13 +24,13 @@ def simul(n_iter, warmup):
     PRIOR = "multinorm" #low-variance
     m = GibbsProbit(prior="multi-norm", intercept=True)
     mc = m.fit(X, Y, n_iter=n_iter, warmup=warmup, seed=SEED)
-    trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
+    trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}_low.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
     dist_plot(mc, warmup=warmup, path=BASE_PATH/f"dist_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
 
     PRIOR = "multinorm" #high-variance
     m = GibbsProbit(prior="multi-norm", intercept=True)
-    mc = m.fit(X, Y, n_iter=n_iter, warmup=warmup, seed=SEED, b_star=np.eye(X.shape[1]+1))*10
-    trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
+    mc = m.fit(X, Y, n_iter=n_iter, warmup=warmup, seed=SEED, b_star=np.eye(X.shape[1]+1)*10)
+    trace_plot(mc, path=BASE_PATH/f"trace_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}_high.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
     dist_plot(mc, warmup=warmup, path=BASE_PATH/f"dist_{METHOD}_{PRIOR}_{n_iter}_warmup_{warmup}.png", replace=REPLACE, title_prefix=f"{METHOD.capitalize()} - ")
 
 if __name__ == "__main__":
@@ -43,5 +43,6 @@ if __name__ == "__main__":
     simul(N_ITER, WARMUP)
 
     # Larger number of iterations
-    N_ITER, WARMUP = 20000, 0
+    N_ITER, WARMUP = 20000, 200
     simul(N_ITER, WARMUP)
+
