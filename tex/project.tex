@@ -14,6 +14,8 @@
 \usepackage{bbm}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{graphicx}
+% \graphicspath{ {./images/} }
 
 \newcommand{\EX}[0]{\mathbb{E}} % expected value
 \newcommand{\V}[0]{\mathbb{V}}
@@ -41,7 +43,7 @@
 
 \section{Project Introduction}
 
-This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. Section 2 succinctly describes the probit regression model and the Bayesian approach to estimating its coefficients using instances of the Metropolis-Hastings algorithm. Next, section 3 and 4 briefly explain two such instances, namely the Metropolis algorithm and the auxiliary variable Gibbs sampler. Then, section 5 compares the performance of the two algorithms on a dataset provided by Finney \cite{finney1947estimation} to study the relationship between the occurrence of transient skin vasorestriction and the rate and volume of the air inspired by the individuals undergoing the test. Performance is assessed by means of basic diagnostics, such as trace plots and acceptance rate computation. Lastly, section 6 summarizes the results of the project. As prescribed by the project's description, this report is heavily inspired by Albert and Chib \cite{albert1993bayesian}.
+This report aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. Section 2 succinctly describes the probit regression model and the Bayesian approach to estimating its coefficients using instances of the Metropolis-Hastings algorithm. Next, section 3 and 4 briefly explain two such instances, namely the Metropolis algorithm and the auxiliary variable Gibbs sampler. Then, section 5 compares the performance of the two algorithms on a dataset provided by Finney \cite{finney1947estimation} to study the relationship between the occurrence of transient skin vasorestriction and the rate and volume of the air inspired by the individuals undergoing the test. Performance is assessed by means of basic diagnostics, such as trace plots and acceptance rate computation. As prescribed by the project's description, this report is heavily inspired by Albert and Chib \cite{albert1993bayesian}.
 
 \section{Probit Model}
 Let \(Y_1,...,Y_n\) be a sample of \(n\) independent binary random variables, where \(Y_i \sim B(p_i)\). The probit model assumes that \(p_i = \Phi(\vec{x}_i^T \beta), i = 1,....,n\), where \(\vec{x}_i^T = \begin{pmatrix} x_{i1} & \hdots & x_{1k} \end{pmatrix}\) is a \(k\)-dimensional vector of observed covariates, \(\beta\) is a \(k \times 1\) vector of unknown coefficients, and \(\Phi\) denotes the cumulative distribution function of a standard normal random variable. Given a sample of observations \(\{(y_i, \vec{x}_i)\}_{i=1}^n\), the standard estimation procedure for the probit model employs the maximum likelihood estimation of coefficient \(\beta\). However, the Bayesian approach to the estimation of \(\beta\) constitutes an interesting alternative. In particular, suppose the posterior density of \(\beta\), denoted by \(\pi(\beta|\vec{y})\),  was known and tractable. Then, the value of the posterior first moment, \(\EX[\beta|\vec{y}]\), would constitute a reasonable estimate for \(\beta\). However, if we denote the proper or improper prior density of \(\beta\) by \(\pi(\beta)\), the posterior density of \(\beta\) has the form:
@@ -149,46 +151,76 @@ Notice that, if we choose the prior \(\pi(\beta)\) in one of the two ways mentio
 % summary of procedures (test MH and Gibbs on same dataset(Finney47) and use of 2 priors for Gibbs(noninfo and multinorm) and 3 for MH(noninfo, lowvar multinorm, highvar multinorm)).
 % % distplot comparison with paper,
 
-Following the pseudo-code described in Algorithm \ref{metropolis} and \ref{gibbs} we implemented the Metropolis and auxiliary variable Gibbs sampler algorithms using the Python programming language. In both cases, the user is allowed to specify whether to include an intercept in the estimation, as well as the initial value for \(\beta_0\), with the default being the OLS estimate for \(\beta\). Moreover, for the Metropolis algorithm, the user is allowed to specify a custom prior distribution, while the Gibbs sampler implemented the full condition for the non-informative and conjugate multivariate normal prior. 
-% We tested them on the same dataset Finney47 \cite{finney1947estimation}. 
-
-In particular, we fitted a BayesianProbit model through the Metropolis-Hasting algorithm  on the Finney47 dataset \cite{finney1947estimation} in 3 different scenarios:
+Following the pseudo-code described in Algorithm \ref{metropolis} and \ref{gibbs} we implemented the Metropolis and auxiliary variable Gibbs sampler algorithms using the Python programming language. In both cases, the user is allowed to specify whether to include an intercept in the estimation, as well as the initial value for \(\beta_0\), with the default being the OLS estimate for \(\beta\). Moreover, for the Metropolis algorithm, the user is allowed to specify a custom prior distribution, while the Gibbs sampler implemented the full conditional associated with the non-informative and conjugate multivariate normal prior mentioned in Section 4.
+\par
+What follows is a short summary of the tests performed to assess the performance of the two algorithms. The dataset used for all tests is the one introduced by Finney  \cite{finney1947estimation} and briefly mentioned in Section 1.
+\par
+In particular, both the Metropolis algorithm and the auxiliary variable Gibbs sampler were used to estimate a probit model using three different priors:
 \begin{enumerate}
-    \item Non-informative prior 
-    \item Multivariate normal prior with high variance centered around the true values of the betas
-    \item Multivariate normal prior with low variance centered around the true values of the betas
+    \item Non-informative prior; 
+    \item Multivariate normal prior with high variance (diagonal covariance matrix with diagonal entries equal to 10) centered around the true values of the betas;
+    \item Multivariate normal prior with low variance (diagonal covariance matrix with diagonal entries equal to 1) centered around the true values of the betas.
 \end{enumerate}
-
-On the same dataset, we also tested the Auxiliary Variable Gibbs Sampler in 2 different scenarios:
-\begin{enumerate}
-    \item Non-informative prior
-    \item Multivariate normal prior with high variance (diagonal covariance matrix with diagonal entries equal to 10) centered around 0
-    \item Multivariate normal prior with low variance (diagonal covariance matrix with diagonal entries equal to 1) centered around 0
-\end{enumerate}
-
-Both the algorithms were run assuming the existence of an intercept in the model, with \(\beta_0 = \hat\beta_{OLS} = (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{y}\), for a number of iterations equal to XXXX. Moreover, we decided to create a variable named "warmup" that would store the number of initial observations to be discarded to compute the previously described \(\hat\beta\).
-
-As a result of these simulations, we plotted the distribution and the trace of the parameters obtained in each scenario. We also plotted the behaviour of the acceptance rate for the Metropolis algorithm.  
-
+Every model estimated included the intercept and the starting value \(\beta_0\) was taken to be equal to \(\hat\beta_{OLS} = (\vec{X}^T \vec{X})^{-1}\vec{X}^T \vec{y}\) for every estimation. For both algorithms, and for each of the priors mentioned above, the fitting procedure was run thrice with number of iterations equal to 200, 800, and 20000, respectively. Lastly, a \textit{warmup}, i.e. number of iterations discarded from the output chain before computing the Bayesian estimator \(\hat{\beta}\), of 200 was used for the runs with 20000 total iterations.
+\par
+Below, distribution and trace plots of \(\beta\) for the simulations performed with 800 iterations are shown. Additionally, the acceptance rate behaviour across iterations for the Metropolis algorithm is also plotted.  
 % distplots are different in shape but similar scale, is it good?
 
 % Describe traceplots (Gibbs wiggle wiggle),
 % acceptance rate (0.4, not too high(local), not too low(stuck) -> slow convergence to stationary distribution, tao choice)
-First, we compared the trace plots obtained in the first scenario of the two algorithms. We could immediately notice that the Gibbs Sampler trace plot seemed to be more accurate as a representation of a sample drawn from the posterior of our parameter of interest. The main reason is that, since the Gibbs Sampler always accepts the proposal, it seems to better explore the sample space of \(\beta\). The Metropolis algorithm, instead, accepts the proposal based on an acceptance ratio and this means that sometimes the proposal is rejected and the new state of the Markov Chain is the same as in the previous iteration. From the trace plot we can see that this stochastic process explores the sample space of \(\beta\) based on "local movements" which make the next observation more likely to be correlated with the previous one. 
 
-(Therefore, if the aim was to obtain a sample of independent observations we would recommend to perform a systematic random sampling on the output sample.) %makes sense ?)  
+First, Figure \ref{fig:trace_1} compares the trace plots obtained using the two algorithms with a non-informative prior. From that, we can immediately notice how the Gibbs Sampler trace plot seems to be of higher quality in terms of the final chain's representativeness of the posterior of \(\beta\). The main reason behind this is that, since the Gibbs Sampler can be interpreted of the MH framework as always accepting the proposal, it seems to better explore the sample space of \(\beta\). The Metropolis algorithm, instead, accepts the proposal with a certain probability. This means that, sometimes, the proposal is rejected and the new state of the Markov chain is the same as in the previous iteration. From the trace plot, we can see that the output chain for the Metropolis algorithm explores the sample space of \(\beta\) based on "local movements", making the next observation more likely to be correlated with the previous one and increasing the number of iterations required for the chain to reach its stationary distribution. 
 
-Moreover, we also noticed that within the simulations performed using Metropolis, as expected, the prior with high variance outperformed the one with low variance. Regarding the Gibbs Sampler, the scenario with multivariate normal prior produced a better trace plot then the one with non informative prior.     
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.6]{images/trace_gibbs_noinfo_800_warmup_0.png}
+    \includegraphics[scale=0.6]{images/trace_metropolis_noinfo_800_warmup_0.png}
+    \caption{Trace plots for both algorithms with non informative prior}
+    \label{fig:trace_1}
+\end{figure}
+
+
+% (Therefore, if the aim was to obtain a sample of independent observations we would recommend to perform a systematic random sampling on the output sample.) %makes sense ?)  
+
+Moreover, we also noticed that within the simulations performed using Metropolis the prior with high variance outperformed the one with low variance. Given that the true value of the coefficients is not very close to zero, this is expected. For priors centered at zero, lower variance means narrower exploration of the sample space of \(\beta\). Regarding the Gibbs Sampler, the scenario with multivariate normal prior produced a better trace plot then the one with non-informative prior. 
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.6]{images/trace_metropolis_highvar_800_warmup_0.png}
+    \includegraphics[scale=0.6]{images/trace_metropolis_lowvar_800_warmup_0.png}
+    \caption{Starting from the top: trace plot for betas sampled using high variance prior on Metropolis, trace plot for betas sampled using low variance prior on Metropolis}
+    \label{fig:trace_2}
+\end{figure}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.6]{images/trrtrace_metropolis_highvar_800_warmup_0.png}
+    \includegraphics[scale=0.6]{images/trace_metropolis_lowvar_800_warmup_0.png}
+    \caption{Starting from the top: trace plot for betas sampled using high variance prior on Metropolis, trace plot for betas sampled using low variance prior on Metropolis}
+    \label{fig:trace_2}
+\end{figure}
 % Firstly, we compared the trace plots. We denote that the Metropolis chain, compared to the Gibbs Sampler one, gets more frequently stuck in certain neighbourhood of the distribution.
 % The Gibbs Sampler has a more wiggly shape that guarantees a less local exploration of the distribution of the parameters. 
 
 %add something about the speed to the convergence? Using warmup we skipped this topic
 
-Looking at the acceptance ratio of the Metropolis it is possible to denote a stabilization of the rate around 0.4 after XXXX iterations. This value can be considered quite satisfactory. On one hand it is not too high, which would lead to the risk of a local exploration. On the other hand it is not too low, that would lead to the risk of a slow convergence to the stationary distribution.
+Looking at the acceptance rate of the Metropolis displayed in Figure \ref{fig:ar} it is possible to denote a stabilization of the rate around 0.4 after nearly 500 iterations. This value can be considered quite satisfactory. On one hand it is not too high, which would lead to the risk of a local exploration. On the other hand it is not too low, that would lead to the risk of a slow convergence to the stationary distribution.
 
-%tao choice?
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.6]{images/ar_metropolis_noinfo_800_warmup_0.png}
+    \includegraphics[scale=0.6]{images/ar_metropolis_noinfo_20000_warmup_0.png}
+    \caption{Starting from the top: acceptance rate of the Metropolis algorithm for 800 iteration, acceptance rate of the Metropolis algorithm for 20000 iterations}
+    \label{fig:ar}
+\end{figure}
+Finally the distribution plot of the the parameters obtained are nearly the same as the ones proposed by Albert and Chib \cite{albert1993bayesian}. 
 
-\section{Final Remarks}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.41]{images/albert_chibb.png}
+    \includegraphics[scale=0.41]{images/dist_gibbs_noinfo_20000_warmup_0.png}
+    \includegraphics[scale=0.41]{images/dist_metropolis_noinfo_20000_warmup_0.png}
+    \caption{Starting from the top: the distribution plots from Albert and Chib, distribution of our parameters for Gibbs and Metropolis respectively}
+    \label{fig:ar}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{project}
