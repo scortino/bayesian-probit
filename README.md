@@ -1,6 +1,6 @@
 # Bayesian Estimation of a Probit Regression Model
 
-This repository contains the code related to our final project for class 20592 at Bocconi University. The project aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. In particular, the code in this repository implements the Metropolis algorithm and the auxiliary variable Gibbs sampler and runs simulations to show how they can be used to estimate the coefficients of a probit regression model.
+This repository contains the code related to our final project for class [20592 Statistics and Probability](http://didattica.unibocconi.it/ts/tsn_anteprima.php?cod_ins=20592&anno=2021&IdPag=6352) at Bocconi University. The project aims at illustrating the use of Bayesian methods for estimating the coefficient of a probit regression model for binary outcomes. In particular, the code in this repository implements the Metropolis algorithm and the auxiliary variable Gibbs sampler and runs simulations to show how they can be used to estimate the coefficients of a probit regression model.
 
 ## Content
 
