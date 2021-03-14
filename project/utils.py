@@ -11,7 +11,7 @@ def load_finney47():
     Y = dataset[:, 0]
     return X, Y
 
-def trace_plot(mc, path=None, replace=False, title_prefix=""):
+def trace_plot(mc, path=None, replace=False, title_prefix="", return_fig=False):
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     ax1.set_title(f"{title_prefix}Trace Plot for {len(mc)-1} iterations")
@@ -22,9 +22,11 @@ def trace_plot(mc, path=None, replace=False, title_prefix=""):
     if path is not None:
         if not os.path.exists(path) or replace:
             fig.savefig(path)
-    return fig
+    if return_fig:
+        return fig
+    plt.close(fig)
 
-def dist_plot(mc, warmup=200, path=None, replace=False, title_prefix=""):
+def dist_plot(mc, warmup=200, path=None, replace=False, title_prefix="", return_fig=False):
     mc = np.vstack(mc) # T, k
     k = mc.shape[1]
     fig, axs = plt.subplots(k, squeeze=True)
@@ -36,9 +38,11 @@ def dist_plot(mc, warmup=200, path=None, replace=False, title_prefix=""):
     if path is not None:
         if not os.path.exists(path) or replace:
             fig.savefig(path)
-    return fig
+    if return_fig:
+        return fig
+    plt.close(fig)
 
-def ar_plot(accepted, warmup=200, path=None, replace=False, title_prefix=""):   
+def ar_plot(accepted, warmup=200, path=None, replace=False, title_prefix="", return_fig=False):   
     n_sample = len(accepted)
     accepted_cum = np.cumsum(accepted)
     iterations = np.arange(1, n_sample+1)
@@ -49,5 +53,7 @@ def ar_plot(accepted, warmup=200, path=None, replace=False, title_prefix=""):
     ax.set_ylabel("acceptance_rate")
     if path is not None:
         if not os.path.exists(path) or replace:
-            fig.savefig(path) 
-    return fig
+            fig.savefig(path)
+    if return_fig:
+        return fig
+    plt.close(fig)

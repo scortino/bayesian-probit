@@ -9,7 +9,7 @@ from project.utils import load_finney47, trace_plot, dist_plot, ar_plot
 METHOD = 'metropolis'
 BASE_PATH = Path('./images')
 SEED = 42
-REPLACE = True
+REPLACE = False
 
 # Finney (1947), see paper p. 675
 X, Y = load_finney47()
