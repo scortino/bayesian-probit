@@ -12,7 +12,7 @@ The current repository is structured as follows:
     - `gibbs.py`: implements auxiliary variable Gibbs sampler in `GibbsProbit` class;
     - `metropolis.py`: implements Metropolis algorithm in `MetropolisProbit` class;
     - `utils.py`: implements utility functions for loading the data and obtaining the plots shown in `images`;
-- `tex/`: LaTeX source code for the PDF report;
+- `bayesian_probit.pdf`: final PDF report;
 - `gibbs_simulation.py`: main simulation script for testing the auxiliary variable Gibbs sampler;
 - `metropolis_simulation.py`: main simulation script for testing the Metropolis algorithm;
 - `README.md`;
